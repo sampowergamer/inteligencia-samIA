@@ -1,0 +1,2 @@
+[functions.knowledge-api]
+verify_jwt = false
