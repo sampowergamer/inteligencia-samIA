@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Central de Conhecimento MinhaIA: biblioteca sincronizada, agentes e API.">
+  <meta name="theme-color" content="#0b0e14">
+  <title>Central de Conhecimento | MinhaIA</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">🧠</div>
+        <div><strong>MinhaIA</strong><small>Central de Conhecimento</small></div>
+      </div>
+      <button class="nav-item active" data-view="library">▦ <span>Biblioteca</span></button>
+      <button class="nav-item" data-view="editor">✎ <span>Criar conhecimento</span></button>
+      <button class="nav-item" data-view="import">⇧ <span>Importar arquivos</span></button>
+      <button class="nav-item" data-view="agents">◎ <span>Agentes</span></button>
+      <button class="nav-item" data-view="backup">⇄ <span>Backup e exportação</span></button>
+      <div class="sidebar-bottom">
+        <span class="local-dot"></span> Armazenamento neste navegador
+        <small id="storageStatus">Preparando banco local…</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">BASE DE INTELIGÊNCIA</div>
+          <h1 id="pageTitle">Biblioteca</h1>
+        </div>
+        <div class="top-actions">
+          <span class="privacy-tag" id="connectionBadge">● LOCAL / PRIVADO</span>
+          <button class="secondary" id="accountBtn">Conta e nuvem</button>
+          <button class="primary" id="newKnowledgeBtn">＋ Novo conhecimento</button>
+        </div>
+      </header>
+
+      <section class="view active" id="view-library">
+        <div class="stats-grid">
+          <article class="stat-card"><span>Conhecimentos</span><strong id="statKnowledge">0</strong><small>Registros salvos</small></article>
+          <article class="stat-card"><span>Pastas</span><strong id="statFolders">0</strong><small>Organização local</small></article>
+          <article class="stat-card"><span>Arquivos</span><strong id="statFiles">0</strong><small>Importações registradas</small></article>
+          <article class="stat-card"><span>Compartilhamentos</span><strong id="statShares">0</strong><small>Vínculos com agentes</small></article>
+        </div>
+        <div class="toolbar">
+          <input id="searchInput" type="search" placeholder="Pesquisar por título, conteúdo ou categoria…">
+          <select id="folderFilter"><option value="">Todas as pastas</option></select>
+          <select id="categoryFilter">
+            <option value="">Todas as categorias</option>
+            <option>Geral</option><option>Procedimentos</option><option>Projetos</option>
+            <option>Regras</option><option>Pesquisa</option><option>Treinamento</option>
+          </select>
+        </div>
+        <div class="content-layout">
+          <section class="panel">
+            <div class="panel-heading"><div><h2>Conhecimentos</h2><p>Conteúdo que sua IA poderá consultar.</p></div><button class="secondary small" id="createFolderBtn">＋ Pasta</button></div>
+            <div id="knowledgeList" class="knowledge-list"></div>
+            <div id="emptyLibrary" class="empty-state"><div class="empty-icon">📚</div><h3>Sua biblioteca está vazia</h3><p>Crie um conhecimento ou importe um documento para começar.</p><button class="primary" id="emptyCreateBtn">Criar primeiro conhecimento</button></div>
+          </section>
+          <aside class="panel tips-panel">
+            <h2>Como funciona</h2>
+            <div class="tip"><b>01 · Criar</b><p>Registre conceitos, regras, exemplos e procedimentos.</p></div>
+            <div class="tip"><b>02 · Organizar</b><p>Use pastas e categorias para manter a base clara.</p></div>
+            <div class="tip"><b>03 · Compartilhar</b><p>Associe conhecimentos aos agentes que devem consultá-los.</p></div>
+            <div class="notice"><b>Armazenamento protegido</b><p>Sem conexão configurada, os dados ficam neste navegador. Configure sua conta na nuvem para sincronizar dispositivos e manter uma cópia remota.</p></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-editor">
+        <div class="panel editor-panel">
+          <div class="panel-heading"><div><h2 id="editorHeading">Novo conhecimento</h2><p>Escreva informações que possam ser consultadas e reutilizadas pelos agentes.</p></div><span class="draft-tag">EDITOR</span></div>
+          <form id="knowledgeForm">
+            <input type="hidden" id="knowledgeId">
+            <div class="form-grid">
+              <label class="field wide">Título<input id="knowledgeTitle" required maxlength="140" placeholder="Ex.: Manual de atendimento ao cliente"></label>
+              <label class="field">Categoria<select id="knowledgeCategory"><option>Geral</option><option>Procedimentos</option><option>Projetos</option><option>Regras</option><option>Pesquisa</option><option>Treinamento</option></select></label>
+              <label class="field">Pasta<select id="knowledgeFolder"><option value="">Sem pasta</option></select></label>
+              <label class="field wide">Resumo<textarea id="knowledgeSummary" rows="2" placeholder="Explique em poucas linhas o que este conhecimento ensina."></textarea></label>
+              <label class="field wide">Conteúdo principal<textarea id="knowledgeContent" rows="12" required placeholder="Escreva o conhecimento. Use títulos, passos, regras e exemplos…"></textarea></label>
+              <label class="field wide">Palavras-chave<input id="knowledgeTags" placeholder="atendimento, vendas, procedimento (separadas por vírgula)"></label>
+              <label class="field wide">Agentes autorizados a consultar
+                <div class="agent-checks" id="editorAgentChecks"></div>
+                <small>Marque os agentes que devem receber este conhecimento na biblioteca compartilhada.</small>
+              </label>
+            </div>
+            <div class="form-actions"><button type="button" class="secondary" id="cancelEditBtn">Cancelar</button><button class="primary" type="submit">Salvar conhecimento</button></div>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" id="view-import">
+        <div class="panel">
+          <div class="panel-heading"><div><h2>Importar arquivos</h2><p>Transforme documentos em registros pesquisáveis na biblioteca.</p></div></div>
+          <div class="dropzone" id="dropzone"><div class="drop-icon">⇧</div><h3>Arraste arquivos aqui</h3><p>ou escolha arquivos no seu computador</p><input type="file" id="fileInput" multiple accept=".txt,.md,.json,.csv,.html,.htm,.pdf,.docx,.doc,.png,.jpg,.jpeg,.webp,.bmp,.mp3,.wav,.ogg,.m4a,.mp4,.webm,.mov"><button class="secondary" id="chooseFilesBtn">Selecionar arquivos</button><small>TXT, MD, JSON, CSV, HTML, PDF, DOCX, imagens, áudio e vídeo.</small></div>
+          <div class="import-options">
+            <label class="field">Categoria padrão<select id="importCategory"><option>Geral</option><option>Procedimentos</option><option>Projetos</option><option>Regras</option><option>Pesquisa</option><option>Treinamento</option></select></label>
+            <label class="field">Pasta de destino<select id="importFolder"><option value="">Sem pasta</option></select></label>
+          </div>
+          <div id="importQueue" class="import-queue"></div>
+          <div class="notice"><b>Limites desta versão</b><p>PDF e DOCX usam bibliotecas carregadas pela internet (PDF.js e Mammoth). OCR usa Tesseract.js. É necessário estar online na primeira utilização dessas ferramentas. Arquivos de áudio/vídeo ficam guardados localmente como anexos; a transcrição automática depende de suporte de reconhecimento de voz do navegador e não é garantida. Para transcrever qualquer arquivo de mídia, será necessária uma API de transcrição numa próxima etapa.</p></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-agents">
+        <div class="panel">
+          <div class="panel-heading"><div><h2>Agentes da MinhaIA</h2><p>Os vínculos definem quais conhecimentos cada agente deve consultar.</p></div><button class="secondary small" id="manageAgentsBtn">＋ Adicionar agente</button></div>
+          <div id="agentsGrid" class="agents-grid"></div>
+          <div class="notice"><b>Compartilhamento</b><p>Os vínculos com agentes são sincronizados na nuvem. Para compartilhar a biblioteca com pessoas, adicione usuários autorizados ao mesmo espaço de trabalho no Supabase.</p></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-backup">
+        <div class="panel">
+          <div class="panel-heading"><div><h2>Backup e exportação</h2><p>Leve sua biblioteca para outro navegador ou prepare a integração futura.</p></div></div>
+          <div class="backup-grid">
+            <article class="backup-card"><div class="backup-icon">⬇</div><h3>Exportar biblioteca JSON</h3><p>Inclui conhecimentos, pastas, agentes, vínculos e metadados. Anexos grandes são exportados separadamente quando possível.</p><button class="primary" id="exportJsonBtn">Exportar JSON</button></article>
+            <article class="backup-card"><div class="backup-icon">⬆</div><h3>Restaurar biblioteca</h3><p>Importe um backup JSON criado por esta ferramenta. A restauração acrescenta os registros sem apagar os atuais.</p><input type="file" id="backupInput" accept=".json"><button class="secondary" id="restoreBtn">Selecionar backup</button></article>
+            <article class="backup-card"><div class="backup-icon">▤</div><h3>Exportar conhecimento</h3><p>Baixe um registro individual em Markdown ou texto simples.</p><select id="singleExportSelect"><option value="">Selecione um conhecimento</option></select><button class="secondary" id="exportMdBtn">Exportar Markdown</button></article>
+          </div>
+          <div class="notice"><b>Portabilidade e segurança</b><p>O backup JSON permite migrar a biblioteca. Os anexos são guardados no Storage quando a nuvem está conectada. Nunca armazene senhas, chaves privadas ou dados pessoais sensíveis em conhecimentos compartilhados.</p></div>
+        </div>
+      </section>
+
+      <footer>MinhaIA · Central de Conhecimento · Versão 2.0 · Nuvem configurável</footer>
+    </main>
+  </div>
+
+  <dialog id="folderDialog"><form method="dialog" id="folderForm"><h2>Nova pasta</h2><label class="field">Nome da pasta<input id="folderName" required maxlength="80" placeholder="Ex.: Projetos"></label><div class="form-actions"><button class="secondary" value="cancel">Cancelar</button><button class="primary" id="saveFolderBtn" value="default">Criar pasta</button></div></form></dialog>
+  <dialog id="agentDialog"><form method="dialog" id="agentForm"><h2>Novo agente</h2><label class="field">Nome<input id="agentName" required maxlength="60" placeholder="Nome do agente"></label><label class="field">Função<input id="agentRole" maxlength="120" placeholder="Ex.: planejamento e acompanhamento"></label><div class="form-actions"><button class="secondary" value="cancel">Cancelar</button><button class="primary" id="saveAgentBtn" value="default">Adicionar</button></div></form></dialog>
+
+  <dialog id="accountDialog" class="account-dialog">
+    <form method="dialog" id="accountCloseForm"><div class="panel-heading"><div><h2>Conta e sincronização</h2><p>Conecte seu projeto Supabase para usar a nuvem.</p></div><button class="icon-btn" value="cancel" aria-label="Fechar">×</button></div></form>
+    <section id="cloudConfigSection">
+      <p class="muted-copy">Use a URL do projeto e a chave publishable (ou anon legada). Nunca cole aqui a chave secret/service_role.</p>
+      <label class="field">URL do projeto Supabase<input id="supabaseUrl" type="url" placeholder="https://seu-projeto.supabase.co" autocomplete="url"></label>
+      <label class="field">Chave publishable<input id="supabaseAnonKey" type="password" placeholder="sb_publishable_..." autocomplete="off"></label>
+      <button class="secondary" id="saveCloudConfigBtn" type="button">Salvar configuração</button>
+    </section>
+    <div class="divider-line"></div>
+    <section id="cloudAuthSection">
+      <label class="field">E-mail<input id="authEmail" type="email" autocomplete="email" placeholder="seu@email.com"></label>
+      <label class="field">Senha da conta<input id="authPassword" type="password" minlength="8" autocomplete="current-password" placeholder="Mínimo de 8 caracteres"></label>
+      <div class="form-actions"><button class="secondary" id="signUpBtn" type="button">Criar conta</button><button class="primary" id="signInBtn" type="button">Entrar e sincronizar</button></div>
+      <p id="cloudAccountStatus" class="muted-copy" aria-live="polite">Nuvem não configurada.</p>
+      <p id="workspaceInfo" class="muted-copy"></p>
+      <button class="secondary small" id="signOutBtn" type="button" hidden>Sair da conta</button>
+    </section>
+    <div class="divider-line"></div>
+    <section id="apiKeySection">
+      <h3>API universal MinhaIA</h3>
+      <p class="muted-copy">Gere uma chave para conectar agentes e outras IAs. A chave aparece uma única vez; guarde-a em local seguro.</p>
+      <label class="field">Nome da integração<input id="apiKeyName" maxlength="80" placeholder="Ex.: Agente Neemias"></label>
+      <label class="field">Permissões<select id="apiKeyPermissions"><option value="read">Somente leitura</option><option value="read,write">Leitura e escrita</option><option value="read,write,delete">Leitura, escrita e exclusão</option></select></label>
+      <button class="secondary" id="createApiKeyBtn" type="button">Gerar chave de API</button>
+      <div id="apiKeyResult" class="api-key-result" hidden><code id="generatedApiKey"></code><button class="secondary small" id="copyApiKeyBtn" type="button">Copiar chave</button></div>
+      <p id="apiEndpointInfo" class="muted-copy"></p>
+    </section>
+    <div class="notice"><b>Compartilhar com outras pessoas</b><p>Cadastre a pessoa no Supabase Auth e adicione o usuário à tabela workspace_members, usando o workspace_id do seu espaço. O arquivo LEIA-ME explica esse procedimento.</p></div>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Bibliotecas externas opcionais: precisam de internet para carregar. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
